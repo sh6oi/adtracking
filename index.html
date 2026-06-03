@@ -2,171 +2,361 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>انتهى وقت الامتحان</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>لوحة إدارة الطلبات</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tajawal', system-ui, sans-serif;
         }
 
         body {
-            font-family: 'Tahoma', 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #1a2a3a 0%, #0d1b2a 100%);
-            min-height: 100vh;
+            background: #eef2f9;
+            padding: 20px;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* بطاقة الإضافة */
+        .add-card, .list-card {
+            background: white;
+            border-radius: 36px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.05);
+            margin-bottom: 32px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: #0f2b3d;
+            color: white;
+            padding: 18px 24px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .form-body {
+            padding: 28px 24px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
         }
 
-        .card {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 48px;
-            padding: 50px 40px;
-            max-width: 600px;
+        .form-group {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f3a4b;
+        }
+
+        .form-group input, .form-group select {
             width: 100%;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(2px);
-            transition: transform 0.3s ease;
+            padding: 14px 16px;
+            border: 2px solid #dce5f0;
+            border-radius: 28px;
+            font-size: 0.95rem;
+            background: #fff;
+            transition: 0.2s;
+            outline: none;
         }
 
-        .card:hover {
-            transform: scale(1.02);
-        }
-
-        .icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
-
-        h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #c0392b;
-            margin-bottom: 20px;
-            letter-spacing: -1px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .message {
-            font-size: 1.3rem;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            line-height: 1.6;
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-radius: 60px;
-            display: inline-block;
-            border-right: 5px solid #e74c3c;
-        }
-
-        .time-info {
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 32px;
-            margin: 20px 0;
-            font-size: 1.1rem;
-            color: #2c3e50;
-        }
-
-        .time-info span {
-            font-weight: bold;
-            color: #e67e22;
-            font-size: 1.3rem;
+        .form-group input:focus, .form-group select:focus {
+            border-color: #2c6e9e;
+            box-shadow: 0 0 0 3px rgba(44,110,158,0.2);
         }
 
         button {
-            background: #c0392b;
+            background: #2c6e9e;
             border: none;
             color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
             padding: 14px 28px;
             border-radius: 40px;
+            font-weight: bold;
+            font-size: 0.9rem;
             cursor: pointer;
-            margin-top: 15px;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            font-family: inherit;
         }
 
+        button.danger {
+            background: #b91c1c;
+        }
+        button.danger:hover {
+            background: #991b1b;
+            transform: scale(0.97);
+        }
+        button.secondary {
+            background: #4b5563;
+        }
         button:hover {
-            background: #a82315;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            filter: brightness(1.02);
         }
 
-        button:active {
-            transform: translateY(2px);
+        /* جدول الطلبات */
+        .orders-table-wrapper {
+            overflow-x: auto;
+            padding: 8px 0;
         }
 
-        .footer {
-            margin-top: 30px;
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+
+        .orders-table th, .orders-table td {
+            padding: 16px 12px;
+            text-align: center;
+            border-bottom: 1px solid #e2edf7;
+        }
+
+        .orders-table th {
+            background: #f1f6fc;
+            font-weight: 800;
+            color: #1f4e6e;
+        }
+
+        .status-badge {
+            background: #e9f4ff;
+            padding: 6px 12px;
+            border-radius: 50px;
             font-size: 0.8rem;
-            color: #7f8c8d;
-            border-top: 1px solid #ddd;
-            padding-top: 20px;
+            font-weight: 600;
+            display: inline-block;
         }
 
-        @media (max-width: 500px) {
-            .card {
-                padding: 30px 20px;
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .edit-btn, .delete-btn {
+            padding: 8px 14px;
+            font-size: 0.75rem;
+            border-radius: 30px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+        .delete-btn {
+            background: #dc2626;
+            color: white;
+        }
+
+        @media (max-width: 680px) {
+            .form-body {
+                flex-direction: column;
+                align-items: stretch;
             }
-            h1 {
-                font-size: 2.2rem;
+            .form-group {
+                width: 100%;
             }
-            .message {
-                font-size: 1rem;
+            .card-header {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="icon">⏰</div>
-        <h1>🚨 انتهى وقت الامتحان 🚨</h1>
-        <div class="message">
-            📢 تم إنهاء الاختبار تلقائياً
-        </div>
-        <div class="time-info">
-            ⏱️ لم يتم قبول أي إجابات بعد <span>9:15</span><br>
-        </div>
-        <div class="footer">
-            جميع الحقوق محفوظة © نظام الاختبارات الإلكترونية
+<div class="admin-container">
+    <!-- إضافة / تعديل طلب -->
+    <div class="add-card">
+        <div class="card-header">➕ إدارة الطلب</div>
+        <div class="form-body">
+            <div class="form-group">
+                <label>📌 رقم التتبع (فريد)</label>
+                <input type="text" id="orderId" placeholder="مثال: ORD-1001" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>🚚 حالة الطلب</label>
+                <select id="orderStatus">
+                    <option value="جاري المعالجة">⚙️ جاري المعالجة</option>
+                    <option value="جاري التجهيز">📦 جاري التجهيز</option>
+                    <option value="قيد الشحن الى الامارات">✈️ قيد الشحن الى الامارات</option>
+                    <option value="قيد الشحن الى العراق">🚛 قيد الشحن الى العراق</option>
+                    <option value="تم الاستلام في البصرة">✅ تم الاستلام في البصرة</option>
+                    <option value="جاري الشحن لمخازننا في الناصرية">🏭 جاري الشحن لمخازننا في الناصرية</option>
+                    <option value="وصلت شحنتك بنجاح">🎉 وصلت شحنتك بنجاح</option>
+                </select>
+            </div>
+            <button id="saveOrderBtn">💾 حفظ / إضافة جديد</button>
+            <button id="cancelEditBtn" class="secondary" style="display: none;">❌ إلغاء التعديل</button>
         </div>
     </div>
 
-    <script>
-        function showAlert() {
-            alert("✅ تم تسليم الامتحان بنجاح. نشكرك على التزامك.");
+    <!-- قائمة الطلبات -->
+    <div class="list-card">
+        <div class="card-header">📋 جميع الطلبات (تعديل / حذف)</div>
+        <div class="orders-table-wrapper">
+            <table class="orders-table" id="ordersTable">
+                <thead>
+                    <tr><th>رقم التتبع</th><th>الحالة</th><th>العمليات</th></tr>
+                </thead>
+                <tbody id="ordersList">
+                    <tr><td colspan="3">جاري التحميل...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+    import { getDatabase, ref, set, get, remove, onValue } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDXY2aKmzbKqxs2EmMiMAZ-_5qatDLiXZQ",
+        authDomain: "alipay-5f8b3.firebaseapp.com",
+        databaseURL: "https://alipay-5f8b3-default-rtdb.firebaseio.com",
+        projectId: "alipay-5f8b3",
+        storageBucket: "alipay-5f8b3.firebasestorage.app",
+        messagingSenderId: "89272268",
+        appId: "1:89272268:web:6f4c4fca444f2898cc7769",
+        measurementId: "G-YHXXK6ZKXC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const ordersRef = ref(db, "orders");
+
+    // عناصر DOM
+    const orderIdInput = document.getElementById("orderId");
+    const orderStatusSelect = document.getElementById("orderStatus");
+    const saveBtn = document.getElementById("saveOrderBtn");
+    const cancelBtn = document.getElementById("cancelEditBtn");
+    const ordersTbody = document.getElementById("ordersList");
+
+    let editMode = false;
+    let oldOrderId = "";
+
+    // تحميل وعرض جميع الطلبات في الجدول (مباشر)
+    function loadOrders() {
+        onValue(ordersRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                ordersTbody.innerHTML = '<tr><td colspan="3">⚠️ لا توجد طلبات بعد، أضف طلباً جديداً</td></tr>';
+                return;
+            }
+            const orders = snapshot.val();
+            let html = "";
+            for (let [id, data] of Object.entries(orders)) {
+                const status = data.status || "غير محدد";
+                html += `
+                    <tr>
+                        <td><strong>${escapeHtml(id)}</strong></td>
+                        <td><span class="status-badge">${escapeHtml(status)}</span></td>
+                        <td class="action-buttons">
+                            <button class="edit-btn" data-id="${escapeHtml(id)}" data-status="${escapeHtml(status)}">✏️ تعديل</button>
+                            <button class="delete-btn" data-id="${escapeHtml(id)}">🗑️ حذف</button>
+                        </td>
+                    </tr>
+                `;
+            }
+            ordersTbody.innerHTML = html;
+
+            // إضافة أحداث للأزرار التي تم إنشاؤها ديناميكياً
+            document.querySelectorAll(".edit-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const id = btn.getAttribute("data-id");
+                    const currentStatus = btn.getAttribute("data-status");
+                    enableEditMode(id, currentStatus);
+                });
+            });
+            document.querySelectorAll(".delete-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const id = btn.getAttribute("data-id");
+                    if (confirm(`هل تريد حذف الطلب ${id} نهائياً؟`)) {
+                        await remove(ref(db, `orders/${id}`));
+                        alert("تم الحذف بنجاح");
+                        if (editMode) resetForm();
+                    }
+                });
+            });
+        });
+    }
+
+    function enableEditMode(id, currentStatus) {
+        editMode = true;
+        oldOrderId = id;
+        orderIdInput.value = id;
+        orderStatusSelect.value = currentStatus;
+        saveBtn.textContent = "✏️ تحديث الطلب";
+        cancelBtn.style.display = "inline-block";
+        orderIdInput.disabled = true;  // لا نسمح بتغيير رقم التتبع في التعديل (لأنه مفتاح)
+    }
+
+    function resetForm() {
+        editMode = false;
+        oldOrderId = "";
+        orderIdInput.value = "";
+        orderStatusSelect.value = "جاري المعالجة";
+        saveBtn.textContent = "💾 حفظ / إضافة جديد";
+        cancelBtn.style.display = "none";
+        orderIdInput.disabled = false;
+    }
+
+    async function saveOrder() {
+        let orderId = orderIdInput.value.trim();
+        const status = orderStatusSelect.value;
+
+        if (!orderId) {
+            alert("الرجاء إدخال رقم التتبع");
+            return;
         }
 
-        // تأثير إضافي: عرض وقت الانتهاء الفعلي
-        function displayEndTime() {
-            const now = new Date();
-            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            const timeStr = now.toLocaleTimeString('ar-EG', options);
-            if (timeInfo && !timeInfo.querySelector('.real-time')) {
-                const realTimeSpan = document.createElement('div');
-                realTimeSpan.style.marginTop = '15px';
-                realTimeSpan.style.fontSize = '0.9rem';
-                realTimeSpan.style.color = '#e67e22';
-                realTimeSpan.className = 'real-time';
-                timeInfo.appendChild(realTimeSpan);
+        if (editMode) {
+            // وضع التعديل: نحذف القديم ونضيف الجديد؟ الأفضل: نعدل على نفس المرجع ولكن المفتاح لا يمكن تغييره
+            // نكتفي بتحديث الحالة فقط للمفتاح نفسه
+            await set(ref(db, `orders/${oldOrderId}`), { status: status });
+            alert(`تم تحديث حالة الطلب ${oldOrderId} بنجاح`);
+            resetForm();
+        } else {
+            // إضافة جديدة: التأكد من عدم وجوده مسبقاً لتجنب الكتابة فوق طلب آخر
+            const snapshot = await get(ref(db, `orders/${orderId}`));
+            if (snapshot.exists()) {
+                alert("رقم التتبع موجود مسبقاً! استخدم وضع التعديل أو رقم آخر.");
+                return;
             }
+            await set(ref(db, `orders/${orderId}`), { status: status });
+            alert(`تم إضافة الطلب ${orderId} بنجاح`);
+            resetForm();
         }
-        displayEndTime();
-    </script>
+    }
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+
+    saveBtn.addEventListener("click", saveOrder);
+    cancelBtn.addEventListener("click", resetForm);
+
+    // بدء تحميل الطلبات
+    loadOrders();
+</script>
 </body>
 </html>
